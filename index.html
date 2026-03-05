@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSU Student Portal | Taraba State University</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a5f2a;
+            --primary-light: #2d8a44;
+            --primary-dark: #0f3d1a;
+            --secondary: #1e3a8a;
+            --accent: #f59e0b;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        .dark-mode {
+            --primary: #22c55e;
+            --primary-light: #4ade80;
+            --primary-dark: #16a34a;
+            --secondary: #60a5fa;
+            --accent: #fbbf24;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3, .brand {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Layout */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background-opacity: 0.9;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: var(--background);
+            border: 1px solid var(--border);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(20deg);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Login Page */
+        .login-wrapper {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 3rem 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-body {
+            padding: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 95, 42, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(26, 95, 42, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 95, 42, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .login-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .breadcrumb {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .user-welcome {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-info h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(26, 95, 42, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        /* Menu Grid */
+        .section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .menu-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .menu-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, transparent 50%, rgba(26, 95, 42, 0.03) 50%);
+            border-radius: 0 0 0 100%;
+        }
+
+        .menu-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .menu-card:nth-child(1) .menu-icon { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .menu-card:nth-child(2) .menu-icon { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+        .menu-card:nth-child(3) .menu-icon { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+        .menu-card:nth-child(4) .menu-icon { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .menu-card:nth-child(5) .menu-icon { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .menu-card:nth-child(6) .menu-icon { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+        .menu-card:hover .menu-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .menu-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .menu-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .menu-arrow {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            color: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .menu-card:hover .menu-arrow {
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        /* Result View */
+        .result-container {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: none;
+            animation: slideUp 0.4s ease;
+        }
+
+        .result-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: var(--background);
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-secondary {
+            padding: 0.625rem 1.25rem;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-primary);
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--background);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-accent:hover {
+            background: #d97706;
+            transform: translateY(-1px);
+        }
+
+        .result-body {
+            padding: 2rem;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th {
+            background: var(--background);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .data-table tr:hover td {
+            background: var(--background);
+        }
+
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .score-high { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
+        .score-medium { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .score-low { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+
+        /* Verification Section */
+        .verification-section {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(26, 95, 42, 0.05), rgba(30, 58, 138, 0.05));
+            border-radius: var(--radius);
+            border: 2px dashed var(--border);
+            text-align: center;
+        }
+
+        .verification-title {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .qr-wrapper {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .verification-id {
+            font-family: 'Courier New', monospace;
+            background: var(--surface);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+
+        .verification-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .login-wrapper {
+                padding: 1rem;
+            }
+
+            .login-body {
+                padding: 1.5rem;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .data-table {
+                font-size: 0.9rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Loading State */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, var(--background) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--surface);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar" id="navbar" style="display: none;">
+            <div class="nav-content">
+                <a href="#" class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <span>TSU Portal</span>
+                </a>
+                <div class="nav-actions">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                    <button class="btn-secondary" onclick="logout()" style="width: auto;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Login View -->
+            <div class="login-wrapper" id="loginView">
+                <div class="login-card">
+                    <div class="login-header">
+                        <div class="logo-container">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <h1>Welcome Back</h1>
+                        <p>Taraba State University Student Portal</p>
+                    </div>
+                    <div class="login-body">
+                        <form onsubmit="handleLogin(event)">
+                            <div class="form-group">
+                                <label class="form-label">Email Address</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    <input type="email" class="form-input" id="email" placeholder="student@tsu.edu.ng" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-lock input-icon"></i>
+                                    <input type="password" class="form-input" id="password" placeholder="Enter your password" required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                                        <i class="fas fa-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                                    <input type="checkbox" style="accent-color: var(--primary);">
+                                    Remember me
+                                </label>
+                                <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500;">Forgot password?</a>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <span>Sign In</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </form>
+                        <div class="login-footer">
+                            <p>Don't have an account? <a href="#">Contact Admin</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard View -->
+            <div class="dashboard" id="dashboard">
+                <div class="page-header">
+                    <div class="breadcrumb">
+                        <i class="fas fa-home"></i> / Dashboard
+                    </div>
+                    <h2>Student Dashboard</h2>
+                </div>
+
+                <div class="user-welcome">
+                    <div class="user-avatar" id="userAvatar">N</div>
+                    <div class="user-info">
+                        <h3>Welcome back, <span id="studentName">Student</span>!</h3>
+                        <p>Matric No: TSU/2023/001 | Computer Science Department</p>
+                    </div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="cgpaDisplay">4.10</div>
+                        <div class="stat-label">Current CGPA</div>
+                        <div class="stat-change">
+                            <i class="fas fa-arrow-up"></i> +0.2 from last semester
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Registered Courses</div>
+                        <div class="stat-change" style="color: #a855f7;">
+                            Current Semester
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">85%</div>
+                        <div class="stat-label">Attendance Rate</div>
+                        <div class="stat-change" style="color: #f59e0b;">
+                            <i class="fas fa-exclamation-circle"></i> 3 classes missed
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value">18/24</div>
+                        <div class="stat-label">Assignments Submitted</div>
+                        <div class="stat-change" style="color: #22c55e;">
+                            6 pending
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">
+                    <i class="fas fa-th-large" style="color: var(--primary);"></i>
+                    Quick Access
+                </h3>
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="showResult('test')">
+                        <i class="fas fa-arrow-right menu-arrow"></i>
+                        <div class="menu-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h4 class="menu-title">Test Results</h4>
+                        <p class="menu-desc">View continuous assessment scores and test performance metrics</p>
+                    </div>
+                    <div class="menu-card" onclick="showResult('assignment')">
+                        <i class="fas fa-arrow-right menu-arrow"></i>
+                        <div class="menu-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h4 class="menu-title">Assignments</h4>
+                        <p class="menu-desc">Track submitted assignments and upcoming deadlines</p>
+                    </div>
+                    <div class="menu-card" onclick="showResult('exam')">
+                        <i class="fas fa-arrow-right menu-arrow"></i>
+                        <div class="menu-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h4 class="menu-title">Examination</h4>
+                        <p class="menu-desc">Access semester examination results and transcripts</p>
+                    </div>
+                    <div class="menu-card" onclick="showResult('presentation')">
+                        <i class="fas fa-arrow-right menu-arrow"></i>
+                        <div class="menu-icon">
+                            <i class="fas fa-presentation-screen"></i>
+                        </div>
+                        <h4 class="menu-title">Presentations</h4>
+                        <p class="menu-desc">Review presentation scores and feedback from faculty</p>
+                    </div>
+                    <div class="menu-card" onclick="showResult('grades')">
+                        <i class="fas fa-arrow-right menu-arrow"></i>
+                        <div class="menu-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h4 class="menu-title">Grade Report</h4>
+                        <p class="menu-desc">Comprehensive grade analysis and academic standing</p>
+                    </div>
+                    <div class="menu-card" onclick="showResult('gp')">
+                        <i class="fas fa-arrow-right menu-arrow"></i>
+                        <div class="menu-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h4 class="menu-title">GPA/CGPA</h4>
+                        <p class="menu-desc">Calculate and monitor your grade point averages</p>
+                    </div>
+                </div>
+
+                <!-- Result View Container -->
+                <div class="result-container" id="resultContainer">
+                    <div class="result-header">
+                        <div>
+                            <h3 class="result-title" id="resultTitle">Results</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">Academic Session 2023/2024 • First Semester</p>
+                        </div>
+                        <div class="result-actions">
+                            <button class="btn-secondary" onclick="closeResult()">
+                                <i class="fas fa-times"></i>
+                                Close
+                            </button>
+                            <button class="btn-secondary" onclick="window.print()">
+                                <i class="fas fa-print"></i>
+                                Print
+                            </button>
+                            <button class="btn-accent" onclick="downloadCurrentPDF()">
+                                <i class="fas fa-download"></i>
+                                Download PDF
+                            </button>
+                        </div>
+                    </div>
+                    <div class="result-body" id="resultBody">
+                        <!-- Dynamic content loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span id="toastMessage">Operation successful</span>
+    </div>
+
+    <script>
+        // Student Data
+        const studentData = {
+            email: 'student@tsu.edu.ng',
+            password: 'password123',
+            name: 'Nathaniel Ibrahim',
+            matric: 'TSU/2023/001',
+            department: 'Computer Science',
+            level: '300',
+            gpa: 4.20,
+            cgpa: 4.10,
+            verificationId: generateVerificationId(),
+            results: {
+                test: [
+                    { course: 'CMP 405', title: 'Computer Architecture', score: 15, total: 20, date: '2024-01-15' },
+                    { course: 'CMP 421', title: 'Software Engineering', score: 18, total: 20, date: '2024-01-18' },
+                    { course: 'CMP 411', title: 'Database Systems', score: 17, total: 20, date: '2024-01-22' },
+                    { course: 'CMP 401', title: 'Operating Systems', score: 16, total: 20, date: '2024-01-25' }
+                ],
+                assignment: [
+                    { course: 'CMP 499', title: 'Project Management', score: 8, total: 10, date: '2024-02-01', submitted: '2024-01-30' },
+                    { course: 'CMP 399', title: 'Research Methods', score: 9, total: 10, date: '2024-02-05', submitted: '2024-02-03' },
+                    { course: 'GST 301', title: 'Entrepreneurship', score: 7, total: 10, date: '2024-02-10', submitted: '2024-02-09' }
+                ],
+                exam: [
+                    { course: 'CMP 412', title: 'Data Structures', score: 65, total: 70, date: '2024-03-15' },
+                    { course: 'CMP 401', title: 'Operating Systems', score: 68, total: 70, date: '2024-03-18' },
+                    { course: 'CMP 405', title: 'Computer Architecture', score: 62, total: 70, date: '2024-03-20' }
+                ],
+                presentation: [
+                    { course: 'CMP 421', title: 'Software Engineering', score: 18, total: 20, topic: 'Agile Methodologies', date: '2024-02-20' },
+                    { course: 'CMP 411', title: 'Database Systems', score: 19, total: 20, topic: 'NoSQL Databases', date: '2024-02-22' }
+                ],
+                grades: [
+                    { course: 'CMP 405', title: 'Computer Architecture', ca: 15, exam: 62, total: 77, grade: 'A', remark: 'Excellent' },
+                    { course: 'CMP 421', title: 'Software Engineering', ca: 18, exam: 64, total: 82, grade: 'A', remark: 'Excellent' },
+                    { course: 'CMP 411', title: 'Database Systems', ca: 17, exam: 61, total: 78, grade: 'A', remark: 'Excellent' },
+                    { course: 'CMP 401', title: 'Operating Systems', ca: 16, exam: 68, total: 84, grade: 'A', remark: 'Excellent' }
+                ]
+            }
+        };
+
+        let currentResultType = '';
+
+        // Utility Functions
+        function generateVerificationId() {
+            return 'TSU-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Check saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeIcon').classList.remove('fa-moon');
+            document.getElementById('themeIcon').classList.add('fa-sun');
+        }
+
+        // Login Handler
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (email === studentData.email && password === studentData.password) {
+                document.getElementById('loginView').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('navbar').style.display = 'block';
+                
+                // Populate user data
+                document.getElementById('studentName').textContent = studentData.name;
+                document.getElementById('userAvatar').textContent = studentData.name.charAt(0);
+                document.getElementById('cgpaDisplay').textContent = studentData.cgpa.toFixed(2);
+                
+                showToast('Welcome back, ' + studentData.name + '!');
+            } else {
+                showToast('Invalid email or password');
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginView').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('navbar').style.display = 'none';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+            closeResult();
+            showToast('Logged out successfully');
+        }
+
+        // Result Display Functions
+        function showResult(type) {
+            currentResultType = type;
+            const container = document.getElementById('resultContainer');
+            const body = document.getElementById('resultBody');
+            const title = document.getElementById('resultTitle');
+            
+            container.style.display = 'block';
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            const titles = {
+                test: 'Continuous Assessment Results',
+                assignment: 'Assignment Records',
+                exam: 'Examination Results',
+                presentation: 'Presentation Scores',
+                grades: 'Complete Grade Report',
+                gp: 'GPA / CGPA Summary'
+            };
+            
+            title.textContent = titles[type];
+            
+            let content = '';
+            
+            if (type === 'gp') {
+                content = renderGPAContent();
+            } else if (studentData.results[type]) {
+                content = renderTableContent(type, studentData.results[type]);
+            }
+            
+            body.innerHTML = content;
+            
+            // Add verification section
+            if (type !== 'gp') {
+                addVerificationSection(body, type);
+            }
+        }
+
+        function renderGPAContent() {
+            return `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                    <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(26, 95, 42, 0.1), rgba(26, 95, 42, 0.05)); border-radius: 16px; border: 2px solid rgba(26, 95, 42, 0.2);">
+                        <div style="font-size: 4rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">${studentData.gpa.toFixed(2)}</div>
+                        <div style="color: var(--text-secondary); font-weight: 500;">Current Semester GPA</div>
+                        <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary);">
+                            <i class="fas fa-arrow-up"></i> First Class Standing
+                        </div>
+                    </div>
+                    <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(30, 58, 138, 0.1), rgba(30, 58, 138, 0.05)); border-radius: 16px; border: 2px solid rgba(30, 58, 138, 0.2);">
+                        <div style="font-size: 4rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">${studentData.cgpa.toFixed(2)}</div>
+                        <div style="color: var(--text-secondary); font-weight: 500;">Cumulative CGPA</div>
+                        <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--secondary);">
+                            <i class="fas fa-award"></i> Academic Excellence
+                        </div>
+                    </div>
+                </div>
+                <div class="verification-section">
+                    <div class="verification-title">
+                        <i class="fas fa-shield-alt" style="color: var(--primary);"></i>
+                        Academic Standing Verification
+                    </div>
+                    <div class="qr-wrapper">
+                        <div class="qr-container" id="qrCode"></div>
+                        <div class="verification-id">ID: ${studentData.verificationId}</div>
+                        <p class="verification-text">
+                            Scan this QR code to verify the authenticity of this academic record 
+                            with the Taraba State University registry.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTableContent(type, data) {
+            let tableHTML = '<table class="data-table"><thead><tr>';
+            
+            // Dynamic headers based on type
+            const headers = {
+                test: ['Course Code', 'Course Title', 'Score', 'Total', 'Percentage', 'Date'],
+                assignment: ['Course Code', 'Course Title', 'Score', 'Total', 'Submitted', 'Due Date'],
+                exam: ['Course Code', 'Course Title', 'Score', 'Total', 'Percentage', 'Date'],
+                presentation: ['Course Code', 'Course Title', 'Topic', 'Score', 'Total', 'Date'],
+                grades: ['Course Code', 'Course Title', 'CA (30%)', 'Exam (70%)', 'Total', 'Grade', 'Remark']
+            };
+            
+            headers[type].forEach(header => {
+                tableHTML += `<th>${header}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+            
+            data.forEach(item => {
+                tableHTML += '<tr>';
+                
+                if (type === 'grades') {
+                    const percentage = ((item.total / 100) * 100).toFixed(1);
+                    const gradeClass = item.total >= 70 ? 'score-high' : item.total >= 60 ? 'score-medium' : 'score-low';
+                    
+                    tableHTML += `
+                        <td><strong>${item.course}</strong></td>
+                        <td>${item.title}</td>
+                        <td>${item.ca}</td>
+                        <td>${item.exam}</td>
+                        <td><strong>${item.total}</strong></td>
+                        <td><span class="score-badge ${gradeClass}">${item.grade}</span></td>
+                        <td>${item.remark}</td>
+                    `;
+                } else if (type === 'presentation') {
+                    const percentage = ((item.score / item.total) * 100).toFixed(1);
+                    tableHTML += `
+                        <td><strong>${item.course}</strong></td>
+                        <td>${item.title}</td>
+                        <td>${item.topic}</td>
+                        <td>${item.score}</td>
+                        <td>${item.total}</td>
+                        <td>${item.date}</td>
+                    `;
+                } else if (type === 'assignment') {
+                    tableHTML += `
+                        <td><strong>${item.course}</strong></td>
+                        <td>${item.title}</td>
+                        <td><span class="score-badge score-high">${item.score}/${item.total}</span></td>
+                        <td>${item.total}</td>
+                        <td>${item.submitted}</td>
+                        <td>${item.date}</td>
+                    `;
+                } else {
+                    const percentage = ((item.score / item.total) * 100).toFixed(1);
+                    const scoreClass = percentage >= 70 ? 'score-high' : percentage >= 60 ? 'score-medium' : 'score-low';
+                    
+                    tableHTML += `
+                        <td><strong>${item.course}</strong></td>
+                        <td>${item.title}</td>
+                        <td><span class="score-badge ${scoreClass}">${item.score}</span></td>
+                        <td>${item.total}</td>
+                        <td>${percentage}%</td>
+                        <td>${item.date}</td>
+                    `;
+                }
+                
+                tableHTML += '</tr>';
+            });
+            
+            tableHTML += '</tbody></table>';
+            return tableHTML;
+        }
+
+        function addVerificationSection(container, type) {
+            const verificationDiv = document.createElement('div');
+            verificationDiv.className = 'verification-section';
+            verificationDiv.innerHTML = `
+                <div class="verification-title">
+                    <i class="fas fa-shield-alt" style="color: var(--primary);"></i>
+                    Result Verification
+                </div>
+                <div class="qr-wrapper">
+                    <div class="qr-container" id="qrCode"></div>
+                    <div class="verification-id">${studentData.verificationId}</div>
+                    <p class="verification-text">
+                        Scan this QR code or use the verification ID to authenticate 
+                        this result with the TSU Examination Office.
+                    </p>
+                </div>
+            `;
+            container.appendChild(verificationDiv);
+            
+            // Generate QR Code
+            setTimeout(() => {
+                new QRCode(document.getElementById('qrCode'), {
+                    text: `https://tsu.edu.ng/verify/${studentData.verificationId}`,
+                    width: 128,
+                    height: 128,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }, 100);
+        }
+
+        function closeResult() {
+            document.getElementById('resultContainer').style.display = 'none';
+            currentResultType = '';
+        }
+
+        // PDF Download Function
+        function downloadCurrentPDF() {
+            if (!currentResultType) return;
+            downloadPDF(currentResultType);
+        }
+
+        function downloadPDF(type) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFillColor(26, 95, 42);
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.text('TARABA STATE UNIVERSITY', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text('Student Academic Record', 105, 30, { align: 'center' });
+            
+            // Student Info
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.text(`Student Name: ${studentData.name}`, 20, 55);
+            doc.text(`Matric Number: ${studentData.matric}`, 20, 62);
+            doc.text(`Department: ${studentData.department}`, 20, 69);
+            doc.text(`Date Generated: ${new Date().toLocaleDateString()}`, 20, 76);
+            doc.text(`Verification ID: ${studentData.verificationId}`, 20, 83);
+            
+            let startY = 95;
+            
+            if (type === 'gp') {
+                doc.setFontSize(14);
+                doc.setTextColor(26, 95, 42);
+                doc.text('GPA/CGPA Summary', 20, startY);
+                
+                doc.autoTable({
+                    startY: startY + 5,
+                    head: [['Metric', 'Value', 'Class']],
+                    body: [
+                        ['Current Semester GPA', studentData.gpa.toFixed(2), 'First Class'],
+                        ['Cumulative CGPA', studentData.cgpa.toFixed(2), 'First Class']
+                    ],
+                    theme: 'grid',
+                    headStyles: { fillColor: [26, 95, 42], textColor: 255 }
+                });
+            } else if (studentData.results[type]) {
+                const title = document.getElementById('resultTitle').textContent;
+                doc.setFontSize(14);
+                doc.setTextColor(26, 95, 42);
+                doc.text(title, 20, startY);
+                
+                let headers = [];
+                let data = [];
+                
+                if (type === 'grades') {
+                    headers = ['Course', 'Title', 'CA', 'Exam', 'Total', 'Grade'];
+                    data = studentData.results[type].map(item => [
+                        item.course, item.title, item.ca, item.exam, item.total, item.grade
+                    ]);
+                } else {
+                    headers = ['Course', 'Title', 'Score', 'Total', 'Percentage'];
+                    data = studentData.results[type].map(item => {
+                        const pct = ((item.score / item.total) * 100).toFixed(1);
+                        return [item.course, item.title, item.score, item.total, pct + '%'];
+                    });
+                }
+                
+                doc.autoTable({
+                    startY: startY + 5,
+                    head: [headers],
+                    body: data,
+                    theme: 'grid',
+                    headStyles: { fillColor: [26, 95, 42], textColor: 255 }
+                });
+            }
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(128, 128, 128);
+                doc.text(`Page ${i} of ${pageCount} | TSU Student Portal`, 105, 285, { align: 'center' });
+                doc.text('This is a computer-generated document and requires verification for official use.', 105, 292, { align: 'center' });
+            }
+            
+            doc.save(`TSU_${type}_results_${studentData.matric}.pdf`);
+            showToast('PDF downloaded successfully');
+        }
+
+        // Close result on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeResult();
+        });
+    </script>
+</body>
+</html>
